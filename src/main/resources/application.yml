@@ -1,2 +1,16 @@
 server:
   port: 8081
+#
+#feign:
+#  client:
+#    config:
+#      default:
+#        loggerLevel: FULL
+
+feign:
+  client:
+    config:
+      battleshipClient:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
