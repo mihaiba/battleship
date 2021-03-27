@@ -18,7 +18,8 @@ public interface BattleshipClient {
 
     @PostMapping(value = "/authenticate",
             headers = {"Content-Type: application/json"},
-            produces = MediaType.APPLICATION_JSON_VALUE)
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     AuthenticationResBody authenticate(AuthenticationReqBody request);
 
     @PostMapping(value = "/tournaments/{tournamentId}/teams",
