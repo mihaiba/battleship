@@ -33,7 +33,9 @@ public class AuthenticationController {
     private final BattleshipClient client;
     private static final Map<String, AuthResponseWrapper> responseCache = new ConcurrentHashMap<>();
 
-    @PostMapping("/authenticate")
+    @PostMapping(value = "/authenticate",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     public AuthenticationResBody authenticate(@RequestBody AuthenticationReqBody request) {
         log.info("request {}", request);
         AuthenticationResBody response = client.authenticate(request);
