@@ -1,42 +1,48 @@
 package com.battleship.http.client;
 
+import com.battleship.http.configuration.FeignConfiguration;
 import com.battleship.http.model.AuthenticationReqBody;
 import com.battleship.http.model.AuthenticationResBody;
-import com.battleship.http.model.BattleshipReqBody;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @FeignClient(value = "battleshipClient",
-        url = "https://battleships.cc/api")
+        url = "http://battleships.cc/api",
+        configuration = FeignConfiguration.class)
 public interface BattleshipClient {
     String AUTH_TOKEN = "Authorization";
 
 
-    @PostMapping(value = "/authenticate",
-            headers = {"Content-Type: application/json"},
+//    @RequestLine("POST /authenticate")
+
+    @RequestMapping(value = "/authenticate",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity authenticate(@RequestBody AuthenticationReqBody request);
+            method = RequestMethod.POST)
+    AuthenticationResBody authenticate(@RequestBody AuthenticationReqBody request);
 
-    @PostMapping(value = "/tournaments/{tournamentId}/teams",
+    @RequestMapping(value = "/tournaments/{tournamentId}/teams",
             headers = {"Content-Type: application/json"},
             consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity createTeam(@RequestHeader(AUTH_TOKEN) String bearerToken,
-                              @PathVariable("tournamentId") String tournamentId);
-
-    @PostMapping(value = "/tournaments/{tournamentId}/battleships",
-            headers = {"Content-Type: application/json"},
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity placeBattleship(@RequestHeader(AUTH_TOKEN) String bearerToken,
-                                   @PathVariable("tournamentId") String tournamentId,
-                                   BattleshipReqBody requestBody);
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            method = RequestMethod.POST)
+//    @RequestLine("POST /tournaments/{tournamentId}/teams")
+    ResponseEntity registerTeam(@RequestHeader(AUTH_TOKEN) String bearerToken,
+                                @PathVariable("tournamentId") String tournamentId);
+//
+//    @PostMapping(value = "/tournaments/{tournamentId}/battleships",
+//            headers = {"Content-Type: application/json"},
+//            consumes = MediaType.APPLICATION_JSON_VALUE,
+//            produces = MediaType.APPLICATION_JSON_VALUE)
+//    ResponseEntity placeBattleship(@RequestHeader(AUTH_TOKEN) String bearerToken,
+//                                   @PathVariable("tournamentId") String tournamentId,
+//                                   BattleshipReqBody requestBody);
 
 
 }
