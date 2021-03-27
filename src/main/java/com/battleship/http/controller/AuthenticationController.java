@@ -7,10 +7,13 @@ import com.battleship.http.model.AuthenticationResBody;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
@@ -23,10 +26,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthenticationController {
 
+    @Value("${username}")
+    private String username;
+    @Value("${password}")
+    private String password;
     private final BattleshipClient client;
     private static final Map<String, AuthResponseWrapper> responseCache = new ConcurrentHashMap<>();
 
-    private AuthenticationResBody authenticate(AuthenticationReqBody request) {
+    @PostMapping("/authenticate")
+    public AuthenticationResBody authenticate(@RequestBody AuthenticationReqBody request) {
         log.info("request {}", request);
         AuthenticationResBody response = client.authenticate(request);
         responseCache.put(request.getUsername(), AuthResponseWrapper.builder()
@@ -40,8 +48,8 @@ public class AuthenticationController {
     private String getJWT() {
         if (!responseCache.containsKey("jarvias")) {
             authenticate(AuthenticationReqBody.builder()
-                    .username("jarvias")
-                    .password("rND4us8yNtVq2B2.EQY-aR")
+                    .username(username)
+                    .password(password)
                     .build());
         }
         AuthResponseWrapper jarvias = responseCache.get("jarvias");
@@ -56,7 +64,7 @@ public class AuthenticationController {
         return responseCache.get("jarvias").getResponse().getToken();
     }
 
-    @GetMapping(value = "/register/{{tournamentId}}",
+    @GetMapping(value = "/register/{tournamentId}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity registerTeam(@PathVariable("tournamentId") String tournamentId) {
         String jwt = getJWT();
